@@ -1,3 +1,9 @@
 #!/bin/sh
 
-echo "test"
+echo "formating codes..."
+go fmt -x ./...
+echo "finished formating codes"
+
+echo "running test..."
+go test ./...
+echo "finished running test"
