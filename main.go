@@ -1,8 +1,16 @@
 package main
 
-import "pascal_lin.github.com/spider/datasource"
+import (
+	"fmt"
+
+	"pascal_lin.github.com/spider/datasource"
+)
 
 func main() {
 	// datasource.DownloadFundData()
-	datasource.GetEconomicStat(datasource.PPI)
+	result, err := datasource.GetEconomicStat(datasource.PPI)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("Results: %v\n", result)
 }
