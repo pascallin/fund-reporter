@@ -1,4 +1,6 @@
-# go-spider-demo
+# fund reporter
+
+Trying to crawler data of Chinese fund to analyze and visulize.
 
 ## Development
 
