@@ -1,10 +1,14 @@
 package datasource
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
+	"strings"
+	"time"
 )
 
 type ResData struct {
@@ -18,9 +22,9 @@ type Res struct {
 }
 
 const (
-	GDP = iota
-	CPI
-	PPI
+	GDP = "gdp"
+	CPI = "cpi"
+	PPI = "ppi"
 )
 const (
 	gdpURL = "https://bmfw.www.gov.cn/bjww/StatisSelectRedis/GDPlist.do?qinStart=2012-A&qinEnd=2021-C&qinName=%E5%9B%BD%E5%86%85%E7%94%9F%E4%BA%A7%E6%80%BB%E5%80%BC%EF%BC%88%E4%BA%BF%E5%85%83%EF%BC%89"
@@ -28,7 +32,7 @@ const (
 	ppiURL = "https://bmfw.www.gov.cn/bjww/StatisSelectRedis/PPIlist.do?qinStart=2010-01&qinEnd=2021-09&qinName=%E5%B7%A5%E4%B8%9A%E7%94%9F%E4%BA%A7%E8%80%85%E5%87%BA%E5%8E%82%E4%BB%B7%E6%A0%BC%E6%9C%88%E5%BA%A6%E5%90%8C%E6%AF%94%E6%B6%A8%E8%B7%8C%EF%BC%88%25%EF%BC%89"
 )
 
-func GetEconomicStat(statType int) (*Res, error) {
+func GetEconomicStat(statType string) (*Res, error) {
 	var url string
 	switch statType {
 	case GDP:
@@ -41,19 +45,37 @@ func GetEconomicStat(statType int) (*Res, error) {
 		return nil, errors.New("wrong stat type")
 	}
 	client := &http.Client{}
-	return GetStatAPIData(client, url)
+	return getStatAPIData(client, url)
 }
 
-func GetStatAPIData(client *http.Client, fullUrl string) (*Res, error) {
+func getSignature(time int64) string {
+	h := sha256.New()
+	secret := fmt.Sprintf("%dfTN2pfuisxTavbTuYVSsNJHetwq5bJvCQkjjtiLM2dCratiA%d", int(time), int(time))
+	h.Write([]byte(secret))
+	return strings.ToUpper(hex.EncodeToString(h.Sum(nil)))
+}
+
+func getStatAPIData(client *http.Client, fullUrl string) (*Res, error) {
+	now := time.Now()
+	sec := now.Unix()
+	signature := getSignature(sec)
+
+	fmt.Printf("timestamp: %d, signature: %s\n", sec, signature)
+
 	req, err := http.NewRequest("GET", fullUrl, nil)
 	if err != nil {
 		return nil, err
 	}
 	req.Header.Add("x-wif-nonce", "QkjjtiLM2dCratiA")
 	req.Header.Add("x-wif-paasid", "smt-application")
-	req.Header.Add("x-wif-signature", "697A55043A808898AC95260A40945999DE8C7D95ADE66F74A654C5895C928EDF")
-	req.Header.Add("x-wif-timestamp", "1635835843")
+	req.Header.Add("x-wif-signature", signature)
+	req.Header.Add("x-wif-timestamp", fmt.Sprintf("%d", sec))
 	req.Header.Add("sec-ch-ua", `Google Chrome";v="95", "Chromium";v="95", ";Not A Brand";v="99"`)
+	req.Header.Add("sec-ch-ua-platform", "Windows")
+	req.Header.Add("sec-ch-ua-mobile", "?0")
+	req.Header.Add("Host", "bmfw.www.gov.cn")
+	req.Header.Add("Origin", "http://www.gov.cn/")
+	req.Header.Add("Referer", "http://www.gov.cn/")
 	req.Header.Add("Content-Type", "application/json; charset=utf-8")
 	resp, err := client.Do(req)
 	if err != nil {

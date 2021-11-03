@@ -18,7 +18,7 @@ func TestGetStatAPIData(t *testing.T) {
 	t.Cleanup(server.Close)
 	t.Run("GetStatAPIData succeed", func(t *testing.T) {
 		url := fmt.Sprintf("%s/fake", server.URL)
-		data, err := GetStatAPIData(server.Client(), url)
+		data, err := getStatAPIData(server.Client(), url)
 		require.NoError(t, err)
 		require.Equal(t, 200, data.Code)
 	})
