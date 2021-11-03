@@ -1,16 +1,9 @@
 package main
 
 import (
-	"fmt"
-
-	"pascal_lin.github.com/spider/datasource"
+	"pascal_lin.github.com/fund-reporter/cmd"
 )
 
 func main() {
-	// datasource.DownloadFundData()
-	result, err := datasource.GetEconomicStat(datasource.PPI)
-	if err != nil {
-		panic(err)
-	}
-	fmt.Printf("Results: %v\n", result)
+	cmd.Execute()
 }
