@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"net/url"
 	"strings"
 	"time"
 )
@@ -26,26 +27,49 @@ const (
 	CPI = "cpi"
 	PPI = "ppi"
 )
-const (
-	gdpURL = "https://bmfw.www.gov.cn/bjww/StatisSelectRedis/GDPlist.do?qinStart=2012-A&qinEnd=2021-C&qinName=%E5%9B%BD%E5%86%85%E7%94%9F%E4%BA%A7%E6%80%BB%E5%80%BC%EF%BC%88%E4%BA%BF%E5%85%83%EF%BC%89"
-	cpiURL = "https://bmfw.www.gov.cn/bjww/StatisSelectRedis/CPIlist.do?qinStart=2016-01&qinEnd=2021-09&qinName=%E5%B1%85%E6%B0%91%E6%B6%88%E8%B4%B9%E4%BB%B7%E6%A0%BC%E6%9C%88%E5%BA%A6%E5%90%8C%E6%AF%94%E6%B6%A8%E8%B7%8C%EF%BC%88%25%EF%BC%89"
-	ppiURL = "https://bmfw.www.gov.cn/bjww/StatisSelectRedis/PPIlist.do?qinStart=2010-01&qinEnd=2021-09&qinName=%E5%B7%A5%E4%B8%9A%E7%94%9F%E4%BA%A7%E8%80%85%E5%87%BA%E5%8E%82%E4%BB%B7%E6%A0%BC%E6%9C%88%E5%BA%A6%E5%90%8C%E6%AF%94%E6%B6%A8%E8%B7%8C%EF%BC%88%25%EF%BC%89"
-)
 
-func GetEconomicStat(statType string) (*Res, error) {
-	var url string
-	switch statType {
-	case GDP:
-		url = gdpURL
-	case CPI:
-		url = cpiURL
-	case PPI:
-		url = ppiURL
-	default:
-		return nil, errors.New("wrong stat type")
+func GetEconomicStat(statType string, startTime string, endTime string) (*Res, error) {
+	url, err := getUrl(statType, startTime, endTime)
+	if err != nil {
+		return nil, err
 	}
 	client := &http.Client{}
 	return getStatAPIData(client, url)
+}
+
+func getUrl(statType string, startTime string, endTime string) (string, error) {
+	const (
+		gdpURL = "https://bmfw.www.gov.cn/bjww/StatisSelectRedis/GDPlist.do"
+		cpiURL = "https://bmfw.www.gov.cn/bjww/StatisSelectRedis/CPIlist.do"
+		ppiURL = "https://bmfw.www.gov.cn/bjww/StatisSelectRedis/PPIlist.do"
+	)
+	params := url.Values{}
+	params.Add("qinStart", startTime)
+	params.Add("qinEnd", endTime)
+	var baseUrl string
+	var qinName string
+	switch statType {
+	case GDP:
+		baseUrl = gdpURL
+		qinName = "国内生产总值（亿元）"
+	case CPI:
+		baseUrl = cpiURL
+		qinName = "居民消费价格月度同比涨跌（%）"
+	case PPI:
+		baseUrl = ppiURL
+		qinName = "工业生产者出厂价格月度同比涨跌（%）"
+	default:
+		return "", errors.New("wrong stat type")
+	}
+	params.Add("qinName", qinName)
+	requestUrl, err := url.Parse(baseUrl)
+	if err != nil {
+		fmt.Println("Malformed URL: ", err.Error())
+		return "", nil
+	}
+	requestUrl.RawQuery = params.Encode() // Escape Query Parameters
+	fmt.Printf("Encoded URL is %q\n", requestUrl.String())
+	return requestUrl.String(), nil
 }
 
 func getSignature(time int64) string {
