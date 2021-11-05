@@ -3,9 +3,11 @@ package cmd
 import (
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/spf13/cobra"
 	"pascal_lin.github.com/fund-reporter/datasource"
+	"pascal_lin.github.com/fund-reporter/tui"
 )
 
 var crawlCmd = &cobra.Command{
@@ -27,11 +29,24 @@ var crawlCmd = &cobra.Command{
 		fmt.Printf("Inside rootCmd Run with args: %v\n", args)
 		switch dataField {
 		case "stat":
-			result, err := datasource.GetEconomicStat(dataType)
+			var startTime, endTime string
+			if dataType == datasource.GDP {
+				startTime = "2020-A"
+				endTime = fmt.Sprintf("%s-A", time.Now().Format("2006"))
+			} else {
+				startTime = "2020-01"
+				endTime = time.Now().Format("2006-01")
+			}
+			result, err := datasource.GetEconomicStat(dataType, startTime, endTime)
 			if err != nil {
 				cmd.PrintErr(err)
 			}
-			fmt.Printf("result: %v", result)
+			fmt.Println(isShowTui)
+			if isShowTui && dataType == datasource.GDP {
+				tui.GDPBarChart(result.Data)
+			} else {
+				fmt.Printf("result: %v", result)
+			}
 		}
 	},
 }

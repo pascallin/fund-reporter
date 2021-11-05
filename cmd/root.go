@@ -17,6 +17,8 @@ var (
 		Long: `获取中国基金及经济数据的命令行工具。
 致在收集数据，可视化，并以文件格式进行导出方便做其他数据分析。`,
 	}
+
+	isShowTui bool
 )
 
 // Execute executes the root command.
@@ -28,6 +30,7 @@ func init() {
 	cobra.OnInitialize(initConfig)
 
 	rootCmd.AddCommand(saveCmd)
+	rootCmd.PersistentFlags().BoolVarP(&isShowTui, "tui", "t", false, "show in terminal ui")
 	rootCmd.AddCommand(crawlCmd)
 }
 

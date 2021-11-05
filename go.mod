@@ -15,6 +15,7 @@ require (
 	github.com/antchfx/xpath v1.2.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
+	github.com/gizak/termui/v3 v3.1.0 // indirect
 	github.com/gobwas/glob v0.2.3 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
@@ -23,8 +24,11 @@ require (
 	github.com/kennygrant/sanitize v1.2.4 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/magiconair/properties v1.8.5 // indirect
+	github.com/mattn/go-runewidth v0.0.2 // indirect
+	github.com/mitchellh/go-wordwrap v0.0.0-20150314170334-ad45545899c7 // indirect
 	github.com/mitchellh/mapstructure v1.4.2 // indirect
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
+	github.com/nsf/termbox-go v0.0.0-20190121233118-02980233997d // indirect
 	github.com/pelletier/go-toml v1.9.4 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/saintfish/chardet v0.0.0-20120816061221-3af4cd4741ca // indirect
