@@ -38,6 +38,9 @@ func init() {
 	defaultFileName := fmt.Sprintf("dataset_%s.csv", time.Now().Format("2006-01-02"))
 	saveCmd.PersistentFlags().StringVarP(&saveFileName, "file", "f", defaultFileName, "保存文件名")
 
+	// disable completion command temporary
+	rootCmd.CompletionOptions.DisableDefaultCmd = true
+
 	rootCmd.AddCommand(saveCmd)
 	rootCmd.AddCommand(crawlCmd)
 }
