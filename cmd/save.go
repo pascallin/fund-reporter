@@ -6,11 +6,11 @@ import (
 )
 
 var saveCmd = &cobra.Command{
-	Use:   "save",
-	Short: "数据另存为",
-	Long:  `将抓取的数据另存为csv文件`,
+	Use:   "save code1 code2 ...",
+	Short: "基金数据另存为",
+	Long:  `将基金抓取的数据另存为csv文件`,
 	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		datasource.DownloadFundData()
+		datasource.DownloadFundData(args[1:], saveFileName)
 	},
 }

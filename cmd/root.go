@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -18,7 +19,8 @@ var (
 致在收集数据，可视化，并以文件格式进行导出方便做其他数据分析。`,
 	}
 
-	isShowTui bool
+	isShowTui    bool
+	saveFileName string
 )
 
 // Execute executes the root command.
@@ -29,8 +31,14 @@ func Execute() error {
 func init() {
 	cobra.OnInitialize(initConfig)
 
+	// crawl command flags
+	crawlCmd.PersistentFlags().BoolVarP(&isShowTui, "tui", "t", false, "用terminal UI展示数据")
+
+	// save command flags
+	defaultFileName := fmt.Sprintf("dataset_%s.csv", time.Now().Format("2006-01-02"))
+	saveCmd.PersistentFlags().StringVarP(&saveFileName, "file", "f", defaultFileName, "保存文件名")
+
 	rootCmd.AddCommand(saveCmd)
-	rootCmd.PersistentFlags().BoolVarP(&isShowTui, "tui", "t", false, "show in terminal ui")
 	rootCmd.AddCommand(crawlCmd)
 }
 
