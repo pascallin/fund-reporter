@@ -35,7 +35,6 @@ Usage:
   fund-reporter [command]
 
 Available Commands:
-  completion  generate the autocompletion script for the specified shell
   crawl       抓取数据
   help        Help about any command
   save        基金数据另存为
