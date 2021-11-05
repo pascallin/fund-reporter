@@ -24,7 +24,7 @@ go run ./reporter.go save fund [code1] [code2]
 go run ./reporter.go crawl stat gdp -t
 ```
 
-## Help
+### Help
 
 ```shell
 > go run ./reporter.go help
