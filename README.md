@@ -19,7 +19,7 @@ go run ./reporter.go crawl stat cpi
 go run ./reporter.go crawl stat ppi
 go run ./reporter.go crawl fund [code]
 
-go run ./reporter.go save fund 161725 481010
+go run ./reporter.go save fund code [code]
 
 go run ./reporter.go crawl stat gdp -t
 ```
