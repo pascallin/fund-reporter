@@ -17,7 +17,7 @@ go mod download
 go run ./reporter.go crawl stat gdp
 go run ./reporter.go crawl stat cpi
 go run ./reporter.go crawl stat ppi
-go run ./reporter.go crawl fund
+go run ./reporter.go crawl fund [code]
 
 go run ./reporter.go save fund
 
