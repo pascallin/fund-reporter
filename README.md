@@ -42,7 +42,6 @@ Available Commands:
 
 Flags:
   -h, --help   help for fund-reporter
-  -t, --tui    show in terminal ui
 
 Use "fund-reporter [command] --help" for more information about a command.
 ```
