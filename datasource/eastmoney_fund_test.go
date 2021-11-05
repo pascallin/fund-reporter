@@ -7,14 +7,14 @@ import (
 func TestGetFundsData(t *testing.T) {
 	t.Run("GetFundsData while wrong code", func(t *testing.T) {
 		codes := []string{"xxx"}
-		result := GetFundsData(codes)
+		result, _ := GetFundsData(codes)
 		if result[0] != nil {
 			t.Errorf("expect receve nil")
 		}
 	})
 	t.Run("GetFundsData succeed", func(t *testing.T) {
 		codes := []string{"161725"}
-		result := GetFundsData(codes)
+		result, _ := GetFundsData(codes)
 		if result[0] == nil {
 			t.Errorf("expect receve fund data")
 		}
@@ -34,7 +34,7 @@ func TestGetFundsDataWithQueue(t *testing.T) {
 	})
 	t.Run("GetFundsDataWithQueue succeed", func(t *testing.T) {
 		codes := []string{"161725"}
-		result := GetFundsData(codes)
+		result, _ := GetFundsData(codes)
 		if result[0] == nil {
 			t.Errorf("expect receve fund data")
 		}

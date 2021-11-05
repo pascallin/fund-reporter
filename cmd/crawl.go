@@ -47,6 +47,17 @@ var crawlCmd = &cobra.Command{
 			} else {
 				fmt.Printf("result: %v", result)
 			}
+		case "fund":
+			code := args[1]
+			params := []string{code}
+			fmt.Println(params)
+			result, err := datasource.GetFundsData(params)
+			if err != nil {
+				panic(err)
+			}
+			for _, x := range result {
+				fmt.Printf("%v\n", x)
+			}
 		}
 	},
 }

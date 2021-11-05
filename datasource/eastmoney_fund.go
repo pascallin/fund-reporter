@@ -30,7 +30,7 @@ type Fund struct {
 
 var host = "https://fund.eastmoney.com"
 
-func GetFundsData(codes []string) []*Fund {
+func GetFundsData(codes []string) ([]*Fund, error) {
 	result := []*Fund{}
 
 	var urls []string
@@ -56,7 +56,7 @@ func GetFundsData(codes []string) []*Fund {
 		}
 	}
 
-	return result
+	return result, nil
 }
 
 func GetFundsDataWithQueue(codes []string, queueLength int) []*Fund {
@@ -150,14 +150,12 @@ func createExtractCollector(ch chan *Fund) *colly.Collector {
 	return c
 }
 
-func DownloadFundData() {
-	codes := []string{"161725", "481010"}
-
-	fName := fmt.Sprintf("dataset_%s.csv", time.Now().Format("20211029"))
+func DownloadFundData(codes []string, fName string) error {
+	fmt.Printf("trying to get funds: %v", codes)
 	file, err := os.Create(fName)
 	if err != nil {
 		log.Fatalf("Cannot create file %q: %s\n", fName, err)
-		return
+		return err
 	}
 	defer file.Close()
 	writer := csv.NewWriter(file)
@@ -166,10 +164,14 @@ func DownloadFundData() {
 	header := []string{"Name", "Code", "CurrentPrice"}
 	writer.Write(header)
 
-	result := GetFundsData(codes)
+	result, err := GetFundsData(codes)
+	if err != nil {
+		return err
+	}
 	// result := datasource.GetFundsDataWithQueue(2)
 	for _, x := range result {
 		fmt.Printf("%v\n", x)
 		writer.Write([]string{x.Name, x.Code, strconv.FormatFloat(x.CurrentPrice, 'f', 4, 64)})
 	}
+	return nil
 }
