@@ -2,8 +2,11 @@ package cmd
 
 import (
 	"fmt"
+	"runtime"
 	"time"
 
+	"github.com/mattn/go-colorable"
+	"github.com/sirupsen/logrus"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -32,9 +35,16 @@ func Execute() error {
 func init() {
 	// logger config
 	log.SetFormatter(&log.TextFormatter{
-		DisableColors: false,
+		ForceColors:   true,
 		FullTimestamp: true,
 	})
+	if runtime.GOOS == "windows" {
+		log.SetOutput(colorable.NewColorableStdout())
+	}
+	logrus.Info("succeeded")
+	logrus.Warn("not correct")
+	logrus.Error("something error")
+	logrus.Fatal("panic")
 
 	// init env
 	cobra.OnInitialize(initConfig)
