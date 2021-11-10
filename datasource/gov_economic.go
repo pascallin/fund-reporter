@@ -10,6 +10,8 @@ import (
 	"net/url"
 	"strings"
 	"time"
+
+	log "github.com/sirupsen/logrus"
 )
 
 type ResData struct {
@@ -64,11 +66,11 @@ func getUrl(statType string, startTime string, endTime string) (string, error) {
 	params.Add("qinName", qinName)
 	requestUrl, err := url.Parse(baseUrl)
 	if err != nil {
-		fmt.Println("Malformed URL: ", err.Error())
+		log.Error(err)
 		return "", nil
 	}
 	requestUrl.RawQuery = params.Encode() // Escape Query Parameters
-	fmt.Printf("Encoded URL is %q\n", requestUrl.String())
+	log.WithField("Encoded URL", requestUrl.String()).Info()
 	return requestUrl.String(), nil
 }
 
@@ -84,7 +86,10 @@ func getStatAPIData(client *http.Client, fullUrl string) (*Res, error) {
 	sec := now.Unix()
 	signature := getSignature(sec)
 
-	fmt.Printf("timestamp: %d, signature: %s\n", sec, signature)
+	log.WithFields(log.Fields{
+		"signature": signature,
+		"timestamp": sec,
+	}).Info("getSignature")
 
 	req, err := http.NewRequest("GET", fullUrl, nil)
 	if err != nil {
@@ -105,7 +110,8 @@ func getStatAPIData(client *http.Client, fullUrl string) (*Res, error) {
 	if err != nil {
 		return nil, err
 	}
-	fmt.Printf("StatusCode: %v\n", resp.StatusCode)
+	log.WithField("StatusCode", resp.StatusCode).Info("HTTP Response")
+
 	defer resp.Body.Close()
 	if err != nil {
 		return nil, err
@@ -129,7 +135,7 @@ func getStatAPIData(client *http.Client, fullUrl string) (*Res, error) {
 	decoder.DisallowUnknownFields()
 	err = decoder.Decode(&decodeResult)
 	if err != nil {
-		fmt.Println("Can not decode JSON")
+		log.Error("Can not decode JSON")
 		return nil, err
 	}
 	return &decodeResult, nil

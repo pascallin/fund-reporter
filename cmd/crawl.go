@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"pascal_lin.github.com/fund-reporter/datasource"
 	"pascal_lin.github.com/fund-reporter/tui"
@@ -26,7 +27,12 @@ var crawlCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		dataField := args[0]
 		dataType := args[1]
-		fmt.Printf("Inside rootCmd Run with args: %v\n", args)
+
+		log.WithFields(log.Fields{
+			"dataField": args[0],
+			"dataType":  args[1],
+		}).Info("Inside rootCmd Run")
+
 		switch dataField {
 		case "stat":
 			var startTime, endTime string
@@ -41,22 +47,33 @@ var crawlCmd = &cobra.Command{
 			if err != nil {
 				cmd.PrintErr(err)
 			}
-			fmt.Println(isShowTui)
+
+			log.WithFields(log.Fields{
+				"isShowTui": isShowTui,
+			}).Debug("tui args")
+
 			if isShowTui && dataType == datasource.GDP {
 				tui.GDPBarChart(result.Data)
 			} else {
-				fmt.Printf("result: %v", result)
+				log.WithField("result", result).Info("Run succeed")
 			}
 		case "fund":
 			code := args[1]
 			params := []string{code}
-			fmt.Println(params)
+
+			log.WithFields(log.Fields{
+				"params": params,
+			}).Info("Crawl fund codes")
+
 			result, err := datasource.GetFundsData(params)
 			if err != nil {
 				panic(err)
 			}
 			for _, x := range result {
-				fmt.Printf("%v\n", x)
+				log.WithFields(log.Fields{
+					"result": x,
+					"code":   x.Code,
+				}).Info("Run succeed")
 			}
 		}
 	},

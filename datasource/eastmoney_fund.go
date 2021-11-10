@@ -3,7 +3,6 @@ package datasource
 import (
 	"encoding/csv"
 	"fmt"
-	"log"
 	"os"
 	"regexp"
 	"strconv"
@@ -13,6 +12,7 @@ import (
 	"github.com/PuerkitoBio/goquery"
 	"github.com/gocolly/colly/v2"
 	"github.com/gocolly/colly/v2/queue"
+	log "github.com/sirupsen/logrus"
 )
 
 type Stock struct {
@@ -144,14 +144,19 @@ func createExtractCollector(ch chan *Fund) *colly.Collector {
 	})
 
 	c.OnError(func(r *colly.Response, err error) {
-		fmt.Println("Request URL:", r.Request.URL, ", Error:", err)
+		log.WithFields(log.Fields{
+			"URL": r.Request.URL,
+		}).Error(err)
 		ch <- nil
 	})
 	return c
 }
 
 func DownloadFundData(codes []string, fName string) error {
-	fmt.Printf("trying to get funds: %v", codes)
+	log.WithFields(log.Fields{
+		"codes": codes,
+	}).Info("trying to get funds")
+
 	file, err := os.Create(fName)
 	if err != nil {
 		log.Fatalf("Cannot create file %q: %s\n", fName, err)
@@ -170,8 +175,13 @@ func DownloadFundData(codes []string, fName string) error {
 	}
 	// result := datasource.GetFundsDataWithQueue(2)
 	for _, x := range result {
-		fmt.Printf("%v\n", x)
+		log.WithFields(log.Fields{
+			"data": x,
+		}).Info("Appending data")
 		writer.Write([]string{x.Name, x.Code, strconv.FormatFloat(x.CurrentPrice, 'f', 4, 64)})
+		log.WithFields(log.Fields{
+			"data": x,
+		}).Info("Done append data")
 	}
 	return nil
 }
