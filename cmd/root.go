@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/mattn/go-colorable"
-	"github.com/sirupsen/logrus"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -41,10 +40,6 @@ func init() {
 	if runtime.GOOS == "windows" {
 		log.SetOutput(colorable.NewColorableStdout())
 	}
-	logrus.Info("succeeded")
-	logrus.Warn("not correct")
-	logrus.Error("something error")
-	logrus.Fatal("panic")
 
 	// init env
 	cobra.OnInitialize(initConfig)
