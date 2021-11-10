@@ -44,3 +44,9 @@ Flags:
 
 Use "fund-reporter [command] --help" for more information about a command.
 ```
+
+### Deployment
+
+```shell
+go build -o ./bin
+```
